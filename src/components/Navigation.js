@@ -49,8 +49,7 @@ const NavLink = styled(MotionLink)`
   }
 `;
 
-const MotionButton = motion.button;
-const NavButton = styled(MotionButton)`
+const NavButton = styled(motion.button)`
   color: white;
   background: none;
   border: none;
@@ -85,7 +84,7 @@ const MobileMenu = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: #4a69bd;
+  background: rgba(74, 105, 189, 0.95);
   padding: 2rem;
   flex-direction: column;
   align-items: center;
@@ -110,7 +109,7 @@ const MobileNavLink = styled(MotionLink)`
   }
 `;
 
-const CloseButton = styled(MotionButton)`
+const CloseButton = styled(motion.button)`
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -120,6 +119,8 @@ const CloseButton = styled(MotionButton)`
   font-size: 1.5rem;
   cursor: pointer;
 `;
+
+const MotionLinkComponent = motion(Link);
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
