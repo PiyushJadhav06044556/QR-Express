@@ -16,7 +16,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #a777e3, #6e8efb);
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
   font-family: 'Montserrat', sans-serif;
 `;
 
@@ -28,6 +28,11 @@ const Form = styled.form`
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   width: 280px;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    max-width: 280px;
+  }
 `;
 
 const Input = styled.input`
@@ -44,7 +49,7 @@ const Button = styled(motion.button)`
   padding: 0.5rem;
   border: none;
   border-radius: 5px;
-  background: #a777e3;
+  background: #6e8efb;
   color: white;
   cursor: pointer;
 `;
@@ -64,16 +69,35 @@ const Heading = styled.h1`
   text-transform: uppercase;
 `;
 
+const RememberMeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+const RememberMeLabel = styled.label`
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+`;
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
       navigate('/home');
     } catch (error) {
       setError(error.message);
@@ -84,7 +108,7 @@ export default function Login() {
     <>
       <Global styles={globalStyles} />
       <Container>
-        <Heading>Welcome to QR Express</Heading>
+        <Heading>Welcome Back</Heading>
         <Form onSubmit={handleSubmit}>
           <h2>Log In</h2>
           <Input
@@ -101,6 +125,15 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <RememberMeContainer>
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <RememberMeLabel htmlFor="rememberMe">Remember me</RememberMeLabel>
+          </RememberMeContainer>
           <Button
             type="submit"
             whileHover={{ scale: 1.05 }}

@@ -13,21 +13,42 @@ const PageContainer = styled.div`
 `;
 
 const Container = styled.div`
-  padding: 6rem 3rem 3rem;
+  padding: 6rem 1rem 1rem;
   color: white;
   font-family: 'Arial', sans-serif;
+
+  @media (min-width: 768px) {
+    padding: 6rem 3rem 3rem;
+  }
 `;
 
 const Title = styled.h1`
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
 `;
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `;
 
 const Card = styled(motion.div)`
@@ -47,42 +68,69 @@ const QRCodeContainer = styled.div`
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ItemName = styled.h2`
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-bottom: 0.5rem;
   text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const ItemDate = styled.p`
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #e0e0e0;
   margin-bottom: 0.5rem;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const ItemType = styled.p`
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #f0f0f0;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const NoItemsMessage = styled.p`
   text-align: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-top: 2rem;
+
+  @media (min-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const LoadingMessage = styled.p`
   text-align: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-top: 2rem;
+
+  @media (min-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const ErrorMessage = styled.p`
   text-align: center;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-top: 2rem;
   color: #ff6b6b;
+
+  @media (min-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const Button = styled.button`
@@ -103,7 +151,11 @@ const Button = styled.button`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 768px) {
+    margin-bottom: 2rem;
+  }
 `;
 
 const DeleteButton = styled(Button)`
@@ -247,7 +299,7 @@ export default function History() {
               >
                 <DeleteButton onClick={() => handleDeleteItem(item)}>Delete</DeleteButton>
                 <QRCodeContainer>
-                  <QRCodeSVG value={item.data} size={200} />
+                  <QRCodeSVG value={item.data} size={150} />
                 </QRCodeContainer>
                 <ItemName>{item.name}</ItemName>
                 <ItemDate>{item.createdAt.toDate().toLocaleString()}</ItemDate>

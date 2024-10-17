@@ -17,12 +17,20 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 768px) {
+    padding: 5rem 1rem 1rem;
+  }
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
   margin-bottom: 2rem;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const Form = styled.form`
@@ -36,6 +44,10 @@ const Form = styled.form`
   border-radius: 15px;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `;
 
 const Input = styled.input`
@@ -48,6 +60,10 @@ const Input = styled.input`
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
   }
 `;
 
@@ -64,6 +80,10 @@ const TextArea = styled.textarea`
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
   }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const Button = styled(motion.button)`
@@ -79,6 +99,10 @@ const Button = styled(motion.button)`
   &:hover {
     background: #1e3799;
   }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const Message = styled(motion.div)`
@@ -86,6 +110,10 @@ const Message = styled(motion.div)`
   font-weight: bold;
   font-size: 1.2rem;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 export default function ContactUs() {

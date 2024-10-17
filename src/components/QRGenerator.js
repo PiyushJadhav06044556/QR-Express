@@ -15,20 +15,20 @@ const PageContainer = styled.div`
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   color: white;
   font-family: 'Arial', sans-serif;
-  padding: 6rem 3rem 3rem;
-  gap: 3rem;
+  padding: 6rem 1rem 1rem;
+  gap: 2rem;
+
+  @media (min-width: 769px) {
+    flex-direction: row;
+    padding: 6rem 3rem 3rem;
+    gap: 3rem;
+  }
 `;
 
-const LeftSection = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const RightSection = styled.div`
+const Section = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -43,10 +43,14 @@ const Form = styled.form`
   width: 100%;
   max-width: 500px;
   background: rgba(255, 255, 255, 0.1);
-  padding: 2.5rem;
+  padding: 1.5rem;
   border-radius: 15px;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+  @media (min-width: 769px) {
+    padding: 2.5rem;
+  }
 `;
 
 const Input = styled.input`
@@ -55,10 +59,14 @@ const Input = styled.input`
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
+  }
+
+  @media (min-width: 769px) {
+    font-size: 1.1rem;
   }
 `;
 
@@ -68,33 +76,48 @@ const Button = styled(motion.button)`
   border-radius: 8px;
   background: #4a69bd;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s ease;
 
   &:hover {
     background: #1e3799;
   }
+
+  @media (min-width: 769px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const QRCodeContainer = styled(motion.div)`
-  padding: 2.5rem;
+  padding: 1.5rem;
   background: white;
   border-radius: 15px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 769px) {
+    padding: 2.5rem;
+  }
 `;
 
 const Message = styled(motion.div)`
   margin-top: 1.5rem;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  text-align: center;
+
+  @media (min-width: 769px) {
+    font-size: 1.2rem;
+  }
 `;
 
-const ErrorMessage = styled(motion.div)`
-  margin-top: 1.5rem;
+const ErrorMessage = styled(Message)`
   color: #ff6b6b;
-  font-weight: bold;
-  font-size: 1.2rem;
 `;
 
 const ShareContainer = styled.div`
@@ -102,6 +125,7 @@ const ShareContainer = styled.div`
   justify-content: center;
   gap: 1rem;
   margin-top: 1.5rem;
+  flex-wrap: wrap;
 `;
 
 const ShareButton = styled(motion.button)`
@@ -110,12 +134,16 @@ const ShareButton = styled(motion.button)`
   border-radius: 50%;
   background: #4a69bd;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
   transition: background 0.3s ease;
 
   &:hover {
     background: #1e3799;
+  }
+
+  @media (min-width: 769px) {
+    font-size: 1.5rem;
   }
 `;
 
@@ -127,6 +155,7 @@ export default function QRGenerator() {
   const [qrData, setQrData] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const qrRef = useRef(null);
 
   const handleSubmit = async (e) => {
@@ -134,19 +163,23 @@ export default function QRGenerator() {
     setError('');
     setMessage('');
     setQrData('');
+    setLoading(true);
 
     if (!auth.currentUser) {
       setError('You must be logged in to generate a QR code.');
+      setLoading(false);
       return;
     }
 
     if (!name) {
       setError('Please provide a name for your QR code.');
+      setLoading(false);
       return;
     }
 
     if (!file && !url && !text) {
       setError('Please provide either a file, URL, or text for the QR code.');
+      setLoading(false);
       return;
     }
 
@@ -175,6 +208,8 @@ export default function QRGenerator() {
     } catch (error) {
       console.error('Error generating QR code:', error);
       setError(`An error occurred while generating the QR code: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -218,7 +253,7 @@ export default function QRGenerator() {
     <PageContainer>
       <Navigation />
       <Container>
-        <LeftSection>
+        <Section>
           <Form onSubmit={handleSubmit}>
             <Input
               type="text"
@@ -247,8 +282,9 @@ export default function QRGenerator() {
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              disabled={loading}
             >
-              Generate QR Code
+              {loading ? 'Generating...' : 'Generate QR Code'}
             </Button>
           </Form>
           {message && (
@@ -269,8 +305,8 @@ export default function QRGenerator() {
               {error}
             </ErrorMessage>
           )}
-        </LeftSection>
-        <RightSection>
+        </Section>
+        <Section>
           {qrData && (
             <>
               <QRCodeContainer
@@ -279,7 +315,7 @@ export default function QRGenerator() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <QRCodeSVG value={qrData} size={300} />
+                <QRCodeSVG value={qrData} size={250} />
               </QRCodeContainer>
               <ShareContainer>
                 <ShareButton onClick={downloadQRCode} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -291,13 +327,13 @@ export default function QRGenerator() {
                 <ShareButton onClick={shareViaWhatsApp} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaWhatsapp />
                 </ShareButton>
-                {/* <ShareButton onClick={shareViaGoogleDrive} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <ShareButton onClick={shareViaGoogleDrive} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaGoogleDrive />
-                </ShareButton> */}
+                </ShareButton>
               </ShareContainer>
             </>
           )}
-        </RightSection>
+        </Section>
       </Container>
     </PageContainer>
   );

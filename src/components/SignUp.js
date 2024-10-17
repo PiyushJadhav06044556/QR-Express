@@ -28,6 +28,11 @@ const Form = styled.form`
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   width: 280px;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    max-width: 280px;
+  }
 `;
 
 const Input = styled.input`
@@ -67,11 +72,19 @@ const Heading = styled.h1`
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate('/home');
@@ -99,6 +112,13 @@ export default function SignUp() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
           <Button
