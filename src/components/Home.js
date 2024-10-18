@@ -199,7 +199,7 @@ export default function Home() {
               Welcome to QR Express!
             </motion.h3>
           )}
-          <Heading>Create & Customize Your QR Code for FREE</Heading>
+          <Heading>Create Your QR Code for FREE</Heading>
           <Subheading>
             Generate, manage, and track QR codes efficiently
           </Subheading>
