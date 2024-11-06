@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
-import { Scanner } from '@yudiel/react-qr-scanner';
+import { QrReader } from 'react-qr-reader';
 import { FaTimes } from 'react-icons/fa';
 
 const ScannerContainer = styled(motion.div)`
@@ -44,9 +44,9 @@ const ErrorMessage = styled.p`
 const QRScanner = ({ onScan, onError, onClose }) => {
   const [scanError, setScanError] = useState(null);
 
-  const handleDecode = (result) => {
+  const handleScan = (result) => {
     if (result) {
-      onScan(result);
+      onScan(result.text);
     }
   };
 
@@ -70,12 +70,15 @@ const QRScanner = ({ onScan, onError, onClose }) => {
         <FaTimes />
       </CloseButton>
       <ScannerWrapper>
-        <Scanner
-          onResult={handleDecode}
+        <QrReader
+          onResult={handleScan}
           onError={handleError}
           constraints={{
             facingMode: 'environment'
           }}
+          videoId="qr-video"
+          scanDelay={300}
+          style={{ width: '100%', height: '100%' }}
         />
       </ScannerWrapper>
       {scanError && <ErrorMessage>{scanError}</ErrorMessage>}

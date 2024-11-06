@@ -82,13 +82,17 @@ const MobileMenu = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(74, 105, 189, 0.95);
+  background: rgba(74, 105, 189, 1); // Solid background color
   padding: 2rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease-in-out;
-  transform: translateX(${props => props.isOpen ? '0' : '-100%'});
+  transform: translateX(-100%);
+
+  &.open {
+    transform: translateX(0);
+  }
 
   @media (max-width: 768px) {
     display: flex;
@@ -154,7 +158,7 @@ export default function Navigation() {
       <MobileMenuButton onClick={toggleMobileMenu}>
         <FaBars />
       </MobileMenuButton>
-      <MobileMenu isOpen={mobileMenuOpen}>
+      <MobileMenu className={mobileMenuOpen ? 'open' : ''}>
         <CloseButton onClick={closeMobileMenu}>
           <FaTimes />
         </CloseButton>

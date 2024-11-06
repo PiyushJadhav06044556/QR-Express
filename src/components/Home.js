@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { FaFacebookF, FaLinkedinIn, FaTwitter, FaQrcode } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
