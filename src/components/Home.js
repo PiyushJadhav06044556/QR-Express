@@ -221,7 +221,7 @@ export default function Home() {
         <LeftSection>
           {showTyping && (
             <WelcomeText>
-              Welcome to QR Express!
+              Welcome to QR Express!!!!!
             </WelcomeText>
           )}
           <Heading>Create Your QR Code for FREE</Heading>
