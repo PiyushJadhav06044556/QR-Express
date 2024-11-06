@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { motion, AnimatePresence } from 'framer-motion';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { FaBars, FaTimes } from 'react-icons/fa';
@@ -36,8 +35,7 @@ const NavLinks = styled.div`
   }
 `;
 
-const MotionLink = motion(Link);
-const NavLink = styled(MotionLink)`
+const NavLink = styled(Link)`
   color: white;
   text-decoration: none;
   padding: 0.5rem 1rem;
@@ -49,7 +47,7 @@ const NavLink = styled(MotionLink)`
   }
 `;
 
-const NavButton = styled(motion.button)`
+const NavButton = styled.button`
   color: white;
   background: none;
   border: none;
@@ -77,7 +75,7 @@ const MobileMenuButton = styled.button`
   }
 `;
 
-const MobileMenu = styled(motion.div)`
+const MobileMenu = styled.div`
   display: none;
   position: fixed;
   top: 0;
@@ -89,13 +87,15 @@ const MobileMenu = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(${props => props.isOpen ? '0' : '-100%'});
 
   @media (max-width: 768px) {
     display: flex;
   }
 `;
 
-const MobileNavLink = styled(MotionLink)`
+const MobileNavLink = styled(Link)`
   color: white;
   text-decoration: none;
   font-size: 1.5rem;
@@ -109,7 +109,7 @@ const MobileNavLink = styled(MotionLink)`
   }
 `;
 
-const CloseButton = styled(motion.button)`
+const CloseButton = styled.button`
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -119,8 +119,6 @@ const CloseButton = styled(motion.button)`
   font-size: 1.5rem;
   cursor: pointer;
 `;
-
-const MotionLinkComponent = motion(Link);
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -143,130 +141,44 @@ export default function Navigation() {
     setMobileMenuOpen(false);
   };
 
-  const menuVariants = {
-    closed: {
-      opacity: 0,
-      x: "-100%",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }
-    },
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }
-    }
-  };
-
   return (
     <Nav>
       <Logo to="/home">QR Express</Logo>
       <NavLinks>
-        <NavLink 
-          to="/home"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Home
-        </NavLink>
-        <NavLink 
-          to="/generator"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Generate QR
-        </NavLink>
-        <NavLink 
-          to="/history"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          History
-        </NavLink>
-        <NavLink 
-          to="/contact"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Contact Us
-        </NavLink>
-        <NavButton
-          onClick={handleLogout}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Logout
-        </NavButton>
+        <NavLink to="/home">Home</NavLink>
+        <NavLink to="/generator">Generate QR</NavLink>
+        <NavLink to="/history">History</NavLink>
+        <NavLink to="/contact">Contact Us</NavLink>
+        <NavButton onClick={handleLogout}>Logout</NavButton>
       </NavLinks>
       <MobileMenuButton onClick={toggleMobileMenu}>
         <FaBars />
       </MobileMenuButton>
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <MobileMenu
-            initial="closed"
-            animate="open"
-            exit="closed"
-            variants={menuVariants}
-          >
-            <CloseButton
-              onClick={closeMobileMenu}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <FaTimes />
-            </CloseButton>
-            <MobileNavLink 
-              to="/home"
-              onClick={closeMobileMenu}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Home
-            </MobileNavLink>
-            <MobileNavLink 
-              to="/generator"
-              onClick={closeMobileMenu}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Generate QR
-            </MobileNavLink>
-            <MobileNavLink 
-              to="/history"
-              onClick={closeMobileMenu}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              History
-            </MobileNavLink>
-            <MobileNavLink 
-              to="/contact"
-              onClick={closeMobileMenu}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Contact Us
-            </MobileNavLink>
-            <NavButton
-              onClick={() => {
-                handleLogout();
-                closeMobileMenu();
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Logout
-            </NavButton>
-          </MobileMenu>
-        )}
-      </AnimatePresence>
+      <MobileMenu isOpen={mobileMenuOpen}>
+        <CloseButton onClick={closeMobileMenu}>
+          <FaTimes />
+        </CloseButton>
+        <MobileNavLink to="/home" onClick={closeMobileMenu}>
+          Home
+        </MobileNavLink>
+        <MobileNavLink to="/generator" onClick={closeMobileMenu}>
+          Generate QR
+        </MobileNavLink>
+        <MobileNavLink to="/history" onClick={closeMobileMenu}>
+          History
+        </MobileNavLink>
+        <MobileNavLink to="/contact" onClick={closeMobileMenu}>
+          Contact Us
+        </MobileNavLink>
+        <NavButton
+          onClick={() => {
+            handleLogout();
+            closeMobileMenu();
+          }}
+        >
+          Logout
+        </NavButton>
+      </MobileMenu>
     </Nav>
   );
 }

@@ -107,13 +107,21 @@ const SocialLinks = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const SocialIcon = styled(motion.a)`
+const SocialIcon = styled.a`
   color: white;
   font-size: 1.2rem;
   transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.8);
+  }
 `;
 
-const CTAButton = styled(motion(Link))`
+const CTAButton = styled(Link)`
   display: inline-block;
   background-color: #4a69bd;
   color: white;
@@ -122,14 +130,19 @@ const CTAButton = styled(motion(Link))`
   text-decoration: none;
   font-weight: bold;
   margin-top: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 
   &:hover {
     background-color: #1e3799;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;
 
-const ScanButton = styled(motion.button)`
+const ScanButton = styled.button`
   position: fixed;
   top: 5rem;
   left: 1rem;
@@ -143,9 +156,32 @@ const ScanButton = styled(motion.button)`
   align-items: center;
   gap: 0.5rem;
   z-index: 100;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   @media (max-width: 768px) {
     top: 4rem;
+  }
+`;
+
+const WelcomeText = styled.h3`
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  margin-top: -0.5rem;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
   }
 `;
 
@@ -160,7 +196,6 @@ export default function Home() {
   const handleScan = (data) => {
     if (data) {
       console.log('QR Code scanned:', data);
-      // Handle the scanned data (e.g., navigate to the URL or display the content)
       alert(`QR Code scanned: ${data}`);
       setShowScanner(false);
     }
@@ -173,11 +208,7 @@ export default function Home() {
   return (
     <Container>
       <Navigation />
-      <ScanButton
-        onClick={() => setShowScanner(true)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
+      <ScanButton onClick={() => setShowScanner(true)}>
         <FaQrcode /> Scan QR
       </ScanButton>
       {showScanner && (
@@ -190,14 +221,9 @@ export default function Home() {
       <MainContent>
         <LeftSection>
           {showTyping && (
-            <motion.h3
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              style={{ fontSize: '1rem', marginBottom: '0.25rem', marginTop: '-0.5rem' }}
-            >
+            <WelcomeText>
               Welcome to QR Express!
-            </motion.h3>
+            </WelcomeText>
           )}
           <Heading>Create Your QR Code for FREE</Heading>
           <Subheading>
@@ -208,17 +234,13 @@ export default function Home() {
             Share websites, contact info, or any data with ease. Track performance, gain insights, 
             and optimize usage for individuals and businesses alike.
           </Description>
-          <CTAButton
-            to="/generator"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <CTAButton to="/generator">
             Create QR Code Now
           </CTAButton>
         </LeftSection>
 
         <RightSection>
-        <QRImage src={qrCodeImage} alt="QR Code Generation" />
+          <QRImage src={qrCodeImage} alt="QR Code Generation" />
         </RightSection>
       </MainContent>
 
@@ -228,8 +250,6 @@ export default function Home() {
             href="https://facebook.com"
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
           >
             <FaFacebookF />
           </SocialIcon>
@@ -237,8 +257,6 @@ export default function Home() {
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
           >
             <FaLinkedinIn />
           </SocialIcon>
@@ -246,8 +264,6 @@ export default function Home() {
             href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
           >
             <FaTwitter />
           </SocialIcon>
