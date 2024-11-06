@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { getDownloadURL, ref, deleteObject } from 'firebase/storage';
 import { firestore, storage, auth } from '../firebase';
 import { QRCodeSVG } from 'qrcode.react';
 import Navigation from './Navigation';
+import { FaWhatsapp, FaDownload } from 'react-icons/fa';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -51,7 +51,7 @@ const Grid = styled.div`
   }
 `;
 
-const Card = styled(motion.div)`
+const Card = styled.div`
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 1.5rem;
@@ -166,6 +166,28 @@ const DeleteButton = styled(Button)`
   font-size: 0.8rem;
 `;
 
+const ShareContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+`;
+
+const ShareButton = styled.button`
+  background-color: #4a69bd;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #1e3799;
+  }
+`;
+
 export default function History() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -258,6 +280,40 @@ export default function History() {
     }
   };
 
+  const handleShareWhatsApp = (item) => {
+    const canvas = document.createElement('canvas');
+    const svg = document.getElementById(`qr-${item.id}`);
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL('image/png');
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(pngFile)}`;
+      window.open(whatsappUrl, '_blank');
+    };
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  };
+
+  const handleDownload = (item) => {
+    const canvas = document.createElement('canvas');
+    const svg = document.getElementById(`qr-${item.id}`);
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `${item.name}_qr_code.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -291,19 +347,22 @@ export default function History() {
         {items.length > 0 ? (
           <Grid>
             {items.map((item) => (
-              <Card
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
+              <Card key={item.id}>
                 <DeleteButton onClick={() => handleDeleteItem(item)}>Delete</DeleteButton>
                 <QRCodeContainer>
-                  <QRCodeSVG value={item.data} size={150} />
+                  <QRCodeSVG id={`qr-${item.id}`} value={item.data} size={150} />
                 </QRCodeContainer>
                 <ItemName>{item.name}</ItemName>
                 <ItemDate>{item.createdAt.toDate().toLocaleString()}</ItemDate>
                 <ItemType>{item.isFile ? 'File' : 'Text/URL'}</ItemType>
+                <ShareContainer>
+                  <ShareButton onClick={() => handleShareWhatsApp(item)}>
+                    <FaWhatsapp />
+                  </ShareButton>
+                  <ShareButton onClick={() => handleDownload(item)}>
+                    <FaDownload />
+                  </ShareButton>
+                </ShareContainer>
               </Card>
             ))}
           </Grid>
