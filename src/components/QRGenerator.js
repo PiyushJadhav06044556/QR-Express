@@ -39,7 +39,7 @@ const Section = styled.div`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem; // Reduced gap between form elements
   width: 100%;
   max-width: 500px;
   background: rgba(255, 255, 255, 0.1);
@@ -110,6 +110,7 @@ const Message = styled(motion.div)`
   font-weight: bold;
   font-size: 1rem;
   text-align: center;
+  color: white;
 
   @media (min-width: 769px) {
     font-size: 1.2rem;
@@ -117,7 +118,7 @@ const Message = styled(motion.div)`
 `;
 
 const ErrorMessage = styled(Message)`
-  color: #ff6b6b;
+  color: white; // Updated color to white
 `;
 
 const ShareContainer = styled.div`
@@ -147,6 +148,13 @@ const ShareButton = styled(motion.button)`
   }
 `;
 
+const FileSizeLimit = styled.p`
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem; // Added margin-bottom
+`;
+
 export default function QRGenerator() {
   const [file, setFile] = useState(null);
   const [url, setUrl] = useState('');
@@ -157,6 +165,17 @@ export default function QRGenerator() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const qrRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.size > 25 * 1024 * 1024) {
+      setError('File size limit exceeded. Maximum file size is 25MB.');
+      setFile(null);
+    } else {
+      setError('');
+      setFile(selectedFile);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -264,8 +283,9 @@ export default function QRGenerator() {
             />
             <Input
               type="file"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={handleFileChange}
             />
+            <FileSizeLimit>Max file size limit is 25MB</FileSizeLimit>
             <Input
               type="url"
               placeholder="Enter URL"

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { FaFacebookF, FaLinkedinIn, FaTwitter, FaQrcode } from 'react-icons/fa';
+import { FaFacebookF, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
 import qrCodeImage from './logo.jpg';
-import QRScanner from './QRScanner';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -141,37 +140,9 @@ const CTAButton = styled(Link)`
   }
 `;
 
-const ScanButton = styled.button`
-  position: fixed;
-  top: 5rem;
-  left: 1rem;
-  background-color: #4a69bd;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 100;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 768px) {
-    top: 4rem;
-  }
-`;
 
 const WelcomeText = styled.h3`
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin-bottom: 0.25rem;
   margin-top: -0.5rem;
   opacity: 0;
@@ -182,46 +153,28 @@ const WelcomeText = styled.h3`
       opacity: 1;
     }
   }
+
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 export default function Home() {
   const [showTyping, setShowTyping] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
     setShowTyping(true);
   }, []);
 
-  const handleScan = (data) => {
-    if (data) {
-      console.log('QR Code scanned:', data);
-      alert(`QR Code scanned: ${data}`);
-      setShowScanner(false);
-    }
-  };
-
-  const handleError = (err) => {
-    console.error(err);
-  };
 
   return (
     <Container>
       <Navigation />
-      <ScanButton onClick={() => setShowScanner(true)}>
-        <FaQrcode /> Scan QR
-      </ScanButton>
-      {showScanner && (
-        <QRScanner
-          onScan={handleScan}
-          onError={handleError}
-          onClose={() => setShowScanner(false)}
-        />
-      )}
       <MainContent>
         <LeftSection>
           {showTyping && (
             <WelcomeText>
-              Welcome to QR Express!!
+              Welcome to QR Express!
             </WelcomeText>
           )}
           <Heading>Create Your QR Code for FREE</Heading>
