@@ -232,6 +232,7 @@ export default function History() {
     } finally {
       setLoading(false);
     }
+    
   };
 
   useEffect(() => {
@@ -280,38 +281,66 @@ export default function History() {
     }
   };
 
-  const handleShareWhatsApp = (item) => {
-    const canvas = document.createElement('canvas');
-    const svg = document.getElementById(`qr-${item.id}`);
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.getContext('2d').drawImage(img, 0, 0);
-      const pngFile = canvas.toDataURL('image/png');
-      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(pngFile)}`;
-      window.open(whatsappUrl, '_blank');
-    };
-    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  const handleShareWhatsApp = async (item) => {
+    const cardData = await generateQRCodeCard(item);
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(cardData)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
-  const handleDownload = (item) => {
-    const canvas = document.createElement('canvas');
-    const svg = document.getElementById(`qr-${item.id}`);
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.getContext('2d').drawImage(img, 0, 0);
-      const pngFile = canvas.toDataURL('image/png');
-      const downloadLink = document.createElement('a');
-      downloadLink.download = `${item.name}_qr_code.png`;
-      downloadLink.href = pngFile;
-      downloadLink.click();
-    };
-    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  const handleDownload = async (item) => {
+    const cardData = await generateQRCodeCard(item);
+    const downloadLink = document.createElement('a');
+    downloadLink.download = `${item.name}_qr_code.png`;
+    downloadLink.href = cardData;
+    downloadLink.click();
+  };
+
+  const generateQRCodeCard = (item) => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      // Set canvas dimensions
+      const cardWidth = 400;
+      const cardHeight = 500;
+      canvas.width = cardWidth;
+      canvas.height = cardHeight;
+      
+      // Fill background
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, cardWidth, cardHeight);
+      
+      // Add title
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(item.name, cardWidth/2, 50);
+      
+      // Add subtitle
+      ctx.fillStyle = '#666666';
+      ctx.font = '16px Arial';
+      ctx.fillText('By QR Express', cardWidth/2, 80);
+      
+      // Draw QR Code
+      const qrSvg = document.getElementById(`qr-${item.id}`);
+      const svgData = new XMLSerializer().serializeToString(qrSvg);
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate QR code position to center it
+        const qrSize = 250;
+        const qrX = (cardWidth - qrSize) / 2;
+        const qrY = 120;
+        
+        // Draw QR code
+        ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+        
+        // Convert to PNG
+        resolve(canvas.toDataURL("image/png"));
+      };
+      
+      img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
+    });
   };
 
   if (loading) {
