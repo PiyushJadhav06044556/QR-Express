@@ -738,15 +738,15 @@ export default function QRGenerator() {
                 <ShareButton onClick={handleMultipleDownload} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaDownload />
                 </ShareButton>
-                <ShareButton onClick={shareViaEmail} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                {/* <ShareButton onClick={shareViaEmail} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaEnvelope />
-                </ShareButton>
+                </ShareButton> */}
                 <ShareButton onClick={shareViaWhatsApp} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaWhatsapp />
                 </ShareButton>
-                <ShareButton onClick={shareViaGoogleDrive} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                {/* <ShareButton onClick={shareViaGoogleDrive} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <FaGoogleDrive />
-                </ShareButton>
+                </ShareButton> */}
               </ShareContainer>
             </>
           )}
