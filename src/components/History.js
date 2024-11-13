@@ -188,6 +188,25 @@ const ShareButton = styled.button`
   }
 `;
 
+const QRCodeGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+`;
+
+const IndividualQRCode = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const QRCodeFileName = styled.p`
+  font-size: 0.8rem;
+  color: #e0e0e0;
+  text-align: center;
+`;
+
 export default function History() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -211,7 +230,10 @@ export default function History() {
       const fetchedItems = await Promise.all(
         querySnapshot.docs.map(async (doc) => {
           const item = doc.data();
-          if (item.isFile) {
+          if (item.isMultiple) {
+            const urls = JSON.parse(item.data);
+            return { ...item, id: doc.id, data: urls };
+          } else if (item.isFile) {
             try {
               const url = await getDownloadURL(ref(storage, item.data));
               return { ...item, id: doc.id, data: url };
@@ -224,7 +246,7 @@ export default function History() {
           }
         })
       );
-      console.log('Fetched items:', fetchedItems);
+
       setItems(fetchedItems);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -232,7 +254,6 @@ export default function History() {
     } finally {
       setLoading(false);
     }
-    
   };
 
   useEffect(() => {
@@ -281,66 +302,17 @@ export default function History() {
     }
   };
 
-  const handleShareWhatsApp = async (item) => {
-    const cardData = await generateQRCodeCard(item);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(cardData)}`;
-    window.open(whatsappUrl, '_blank');
+  const handleDownloadQRCode = (url, name) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${name}.png`;
+    link.click();
   };
 
-  const handleDownload = async (item) => {
-    const cardData = await generateQRCodeCard(item);
-    const downloadLink = document.createElement('a');
-    downloadLink.download = `${item.name}_qr_code.png`;
-    downloadLink.href = cardData;
-    downloadLink.click();
-  };
-
-  const generateQRCodeCard = (item) => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      
-      // Set canvas dimensions
-      const cardWidth = 400;
-      const cardHeight = 500;
-      canvas.width = cardWidth;
-      canvas.height = cardHeight;
-      
-      // Fill background
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, cardWidth, cardHeight);
-      
-      // Add title
-      ctx.fillStyle = '#1a1a1a';
-      ctx.font = 'bold 24px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(item.name, cardWidth/2, 50);
-      
-      // Add subtitle
-      ctx.fillStyle = '#666666';
-      ctx.font = '16px Arial';
-      ctx.fillText('By QR Express', cardWidth/2, 80);
-      
-      // Draw QR Code
-      const qrSvg = document.getElementById(`qr-${item.id}`);
-      const svgData = new XMLSerializer().serializeToString(qrSvg);
-      const img = new Image();
-      
-      img.onload = () => {
-        // Calculate QR code position to center it
-        const qrSize = 250;
-        const qrX = (cardWidth - qrSize) / 2;
-        const qrY = 120;
-        
-        // Draw QR code
-        ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
-        
-        // Convert to PNG
-        resolve(canvas.toDataURL("image/png"));
-      };
-      
-      img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
-    });
+  const handleShareQRCode = (url) => {
+    const shareText = `Check out this QR code: ${url}`;
+    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappURL, '_blank');
   };
 
   if (loading) {
@@ -348,7 +320,7 @@ export default function History() {
       <PageContainer>
         <Navigation />
         <Container>
-          <LoadingMessage>Loading...</LoadingMessage>
+          <LoadingMessage>Loading your QR code history...</LoadingMessage>
         </Container>
       </PageContainer>
     );
@@ -378,17 +350,28 @@ export default function History() {
             {items.map((item) => (
               <Card key={item.id}>
                 <DeleteButton onClick={() => handleDeleteItem(item)}>Delete</DeleteButton>
-                <QRCodeContainer>
-                  <QRCodeSVG id={`qr-${item.id}`} value={item.data} size={150} />
-                </QRCodeContainer>
+                {item.isMultiple ? (
+                  <QRCodeGrid>
+                    {item.data.map((url, index) => (
+                      <IndividualQRCode key={index}>
+                        <QRCodeSVG value={url} size={100} />
+                        <QRCodeFileName>{item.fileNames[index]}</QRCodeFileName>
+                      </IndividualQRCode>
+                    ))}
+                  </QRCodeGrid>
+                ) : (
+                  <QRCodeContainer>
+                    <QRCodeSVG value={item.data} size={150} />
+                  </QRCodeContainer>
+                )}
                 <ItemName>{item.name}</ItemName>
                 <ItemDate>{item.createdAt.toDate().toLocaleString()}</ItemDate>
-                <ItemType>{item.isFile ? 'File' : 'Text/URL'}</ItemType>
+                <ItemType>{item.isFile ? (item.isMultiple ? 'Multiple Files' : 'File') : 'Text/URL'}</ItemType>
                 <ShareContainer>
-                  <ShareButton onClick={() => handleShareWhatsApp(item)}>
+                  <ShareButton onClick={() => handleShareQRCode(item.data)} title="Share on WhatsApp">
                     <FaWhatsapp />
                   </ShareButton>
-                  <ShareButton onClick={() => handleDownload(item)}>
+                  <ShareButton onClick={() => handleDownloadQRCode(item.data, item.name)} title="Download QR Code">
                     <FaDownload />
                   </ShareButton>
                 </ShareContainer>
